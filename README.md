@@ -1,4 +1,4 @@
 binder
 ======
 
-A service for Block Storage Service
+This is study project for myself.
