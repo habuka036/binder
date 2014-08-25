@@ -7,8 +7,8 @@
 package main
 
 import (
-   "net/url"
-   "strings"
+//   "net/url"
+//   "strings"
 
    "github.com/coreos/go-etcd/etcd"
 )
@@ -26,6 +26,3 @@ func (s *server) UpdateClient(resp *etcd.Response) {
    
 }
 
-func get(client *etcd.Client, path string, recursive bool) (*etcd.Response, error) {
-
-}

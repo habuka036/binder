@@ -9,8 +9,10 @@ package main
 import (
     "flag"
     "strings"
+    "log"
+    "os"
 
-    "github.com/coreos/go-etcd/etcd"
+//    "github.com/coreos/go-etcd/etcd"
 )
 
 const Version = "0.0.0"
@@ -18,7 +20,7 @@ const Version = "0.0.0"
 var (
    config = &Config{
       VolumePath: "",
-      BindAddress: ""
+      BindAddress: "",
    }
    etcdhosts = ""
 )
@@ -34,22 +36,30 @@ func init() {
    flag.StringVar(
       &config.VolumePath, "volumepath", 
       env("VOLUME_PATH", "/var/lib/binder/volumes"), 
-      "volume file path"
+      "volume file path",
    )
    flag.StringVar(
       &config.BindAddress, "bind",
       env("BIND_ADDRESS", "127.0.0.1:8776"),
-      "bind address of binder"),
+      "bind address of binder",
+   )
    flag.StringVar(
       &etcdhosts, "etcdhosts", 
       env("ETCD_HOSTS", "127.0.0.1:4001"), 
-      "ip:port of etcd"
+      "ip:port of etcd",
    )
 }
 
 func main() {
    flag.Parse()
-   etcd_hosts := strings.Split(etcdhosts, ",")
-   etcd_client := NewClient(etcd_hosts)
-   config, err := loadConfig(etcd_client, config)
+   hosts := strings.Split(etcdhosts, ",")
+   client := NewClient(hosts)
+   config, err := loadConfig(client, config)
+   if err != nil {
+      log.Fatal(err)
+   }
+   s := NewServer(config, client)
+   if err := s.Run(); err != nil {
+      log.Fatal(err)
+   }
 }
